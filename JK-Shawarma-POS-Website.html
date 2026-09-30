@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>JK Arabian Shawarma & Grill House — POS & Live Reports (v5.1)</title>
+  <style>
+    :root {
+      --bg: #120E0B;
+      --surface: #1E1814;
+      --surface-variant: #2A211B;
+      --orange: #FF6B00;
+      --gold: #FFD54F;
+      --green: #00C853;
+      --whatsapp: #25D366;
+      --red: #FF5252;
+      --text: #FFF8F0;
+      --text-muted: #C8BBAE;
+      --border-gold: rgba(255, 213, 79, 0.45);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Top Corner Account & IST Bar */
+    .top-corner-bar {
+      background: #16120E;
+      border-bottom: 1px solid var(--border-gold);
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .user-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      background: rgba(255, 107, 0, 0.18);
+      border: 1px solid rgba(255, 213, 79, 0.6);
+      cursor: pointer;
+    }
+    .user-badge.reports-only {
+      background: rgba(0, 200, 83, 0.18);
+      border-color: var(--green);
+    }
+    .user-badge-title {
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--gold);
+    }
+    .user-badge.reports-only .user-badge-title {
+      color: var(--green);
+    }
+    .ist-clock {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: opacity 0.15s ease, transform 0.1s ease;
+    }
+    .btn:active {
+      transform: scale(0.98);
+    }
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .btn-orange {
+      background: var(--orange);
+      color: #fff;
+    }
+    .btn-green {
+      background: var(--green);
+      color: #fff;
+    }
+    .btn-whatsapp {
+      background: var(--whatsapp);
+      color: #fff;
+    }
+    .btn-outline-gold {
+      background: transparent;
+      color: var(--gold);
+      border: 1.5px solid var(--border-gold);
+    }
+    .btn-outline-red {
+      background: transparent;
+      color: var(--red);
+      border: 1.5px solid rgba(255, 82, 82, 0.5);
+    }
+
+    /* Brand Logo Banner */
+    .brand-banner {
+      background: #16120E;
+      border: 1.5px solid var(--gold);
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .brand-banner-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .crest-circle {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: #1F1712;
+      border: 1.5px solid var(--gold);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      color: var(--orange);
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    .halal-circle {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: rgba(0, 200, 83, 0.14);
+      border: 1.5px solid var(--green);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+      font-weight: 900;
+      font-size: 9px;
+      flex-shrink: 0;
+    }
+    .brand-title-wrap {
+      text-align: center;
+      flex: 1;
+    }
+    .brand-jk {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--orange);
+      letter-spacing: 1px;
+    }
+    .brand-main {
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--gold);
+    }
+    .brand-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+    .brand-footer {
+      border-top: 1px solid rgba(255,255,255,0.12);
+      margin-top: 8px;
+      padding-top: 6px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--gold);
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* Main Container & Responsive Grid */
+    .main-content {
+      flex: 1;
+      padding: 12px 16px 80px 16px;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .pos-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.95fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .pos-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards & Inputs */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border-gold);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--gold);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+    .chip {
+      padding: 8px 14px;
+      border-radius: 10px;
+      background: var(--surface-variant);
+      color: var(--text);
+      border: 1px solid rgba(255, 213, 79, 0.3);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .chip.active {
+      background: var(--orange);
+      color: #fff;
+      border-color: var(--orange);
+    }
+    .category-banner {
+      background: var(--surface-variant);
+      border-left: 4px solid var(--orange);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 900;
+      color: var(--gold);
+      font-size: 13px;
+      margin: 12px 0 8px 0;
+    }
+    .menu-item-card {
+      background: var(--surface);
+      border: 1px solid rgba(255, 213, 79, 0.25);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .menu-item-card.in-cart {
+      border: 1.5px solid var(--orange);
+      background: rgba(255, 107, 0, 0.08);
+    }
+    .veg-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      display: inline-block;
+      margin-right: 6px;
+    }
+    .veg-dot.veg { background: #00E676; }
+    .veg-dot.nonveg { background: #FF5252; }
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .qty-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: none;
+      background: var(--orange);
+      color: #fff;
+      font-weight: 900;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .input-field {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1.5px solid rgba(255, 213, 79, 0.45);
+      background: var(--surface-variant);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      outline: none;
+    }
+    .input-field:focus {
+      border-color: var(--orange);
+    }
+    .input-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    /* Payment Bottom Box (matches screenshot) */
+    .payment-bottom-box {
+      margin-top: 8px;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--surface-variant);
+      border: 1.5px solid var(--green);
+    }
+    .payment-bottom-box.upi-box {
+      border-color: var(--whatsapp);
+    }
+    .payment-bottom-box.other-box {
+      border-color: var(--gold);
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #16120E;
+      border-top: 1px solid var(--border-gold);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 6px;
+      z-index: 100;
+    }
+    .nav-item {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 8px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .nav-item.active {
+      background: var(--orange);
+      color: #fff;
+    }
+
+    /* Modal Dialog */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.78);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 200;
+    }
+    .modal-card {
+      background: var(--surface);
+      border: 1.5px solid var(--gold);
+      border-radius: 20px;
+      max-width: 480px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 18px;
+    }
+    .whatsapp-receipt-bubble {
+      background: #E1FFC7;
+      color: #111;
+      border: 1.5px solid var(--whatsapp);
+      border-radius: 16px;
+      padding: 16px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .mono-divider {
+      font-family: monospace;
+      color: #444;
+      margin: 4px 0;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .kpi-box {
+      background: var(--surface-variant);
+      border: 1px solid var(--border-gold);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .kpi-title {
+      font-size: 10px;
+      font-weight: 900;
+      color: var(--text-muted);
+    }
+    .kpi-val {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--gold);
+      margin: 4px 0;
+    }
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- TOP CORNER BAR (Always Visible When Logged In) -->
+  <div id="topCornerBar" class="top-corner-bar hidden">
+    <div id="activeUserBadge" class="user-badge" onclick="openSwitchLoginModal()">
+      <div>
+        <div id="activeUserTitle" class="user-badge-title">USER: janiads (POS ADMIN) • v5.1</div>
+        <div id="liveIstClock" class="ist-clock">🇮🇳 IST: --:--</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="btn btn-orange" onclick="openSwitchLoginModal()">⇄ Switch Login</button>
+      <button class="btn btn-outline-gold" onclick="logoutPos()">Logout</button>
+    </div>
+  </div>
+
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="main-content" style="max-width: 520px;">
+    <div class="brand-banner">
+      <div class="brand-banner-top">
+        <div class="crest-circle"><span>👑</span><span>JK</span></div>
+        <div class="brand-title-wrap">
+          <div class="brand-jk">JK</div>
+          <div class="brand-main">ARABIAN SHAWARMA</div>
+          <div class="brand-sub">— & GRILL HOUSE —</div>
+        </div>
+        <div class="halal-circle"><span>حلال</span><span>HALAL</span></div>
+      </div>
+      <div class="brand-footer">
+        <span>📞 86885 53379</span>
+        <span>📍 RTO Office Road, Siddhardha Nagar, Kakinada</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">
+        <span>🔐 SELECT LOGIN USER / ROLE (v5.1 Web)</span>
+      </div>
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button id="roleBtnJaniads" class="btn btn-orange" style="flex:1; padding:12px;" onclick="fillLoginRole('janiads')">
+          <div>
+            <div>1. POS Admin</div>
+            <div style="font-size:10px; opacity:0.9;">ID: janiads</div>
+          </div>
+        </button>
+        <button id="roleBtnJkshawarma" class="btn btn-outline-gold" style="flex:1; padding:12px;" onclick="fillLoginRole('jkshawarma')">
+          <div>
+            <div>2. Live Reports Only</div>
+            <div style="font-size:10px; color:var(--green);">ID: jkshawarma</div>
+          </div>
+        </button>
+      </div>
+
+      <div id="loginRoleInfoBox" style="background:rgba(255,107,0,0.14); padding:10px 12px; border-radius:10px; margin-bottom:12px; font-size:12px;">
+        <strong style="color:var(--gold);">PRIMARY POS USER: janiads (janidigitalads@gmail.com)</strong>
+        <div style="color:var(--text-muted); margin-top:2px;">• Full POS Order Billing + Live Reports Sync.</div>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <label class="input-label">Login User ID (janiads or jkshawarma)</label>
+        <input id="loginUserId" class="input-field" type="text" value="janiads" placeholder="janiads or jkshawarma" />
+      </div>
+      <div style="margin-bottom:12px;">
+        <label class="input-label">Password</label>
+        <input id="loginPassword" class="input-field" type="password" value="Janiads001" placeholder="Enter password" />
+      </div>
+      <div id="loginError" style="color:var(--red); font-size:12px; margin-bottom:8px; display:none;"></div>
+      <button id="loginSubmitBtn" class="btn btn-orange" style="width:100%; height:48px; font-size:14px;" onclick="submitLogin()">
+        LOGIN TO POS & LIVE SYNC (janiads)
+      </button>
+    </div>
+    <div style="text-align:center; color:var(--gold); font-weight:800; font-size:13px; margin-top:12px;">
+      Developed by JANI ADS
+    </div>
+  </div>
+
+  <!-- MAIN APP SCREEN -->
+  <div id="appScreen" class="main-content hidden">
+
+    <!-- TAB 1: PLACE ORDER (POS) -->
+    <div id="tabPlaceOrder">
+      <div class="pos-grid">
+        <!-- LEFT: MENU PANE -->
+        <div>
+          <div class="brand-banner">
+            <div class="brand-banner-top">
+              <div class="crest-circle"><span>👑</span><span>JK</span></div>
+              <div class="brand-title-wrap">
+                <div class="brand-jk">JK</div>
+                <div class="brand-main">ARABIAN SHAWARMA</div>
+                <div class="brand-sub">— & GRILL HOUSE —</div>
+              </div>
+              <div class="halal-circle"><span>حلال</span><span>HALAL</span></div>
+            </div>
+            <div class="brand-footer">
+              <span>📞 86885 53379</span>
+              <span>📍 RTO Office Road, Siddhardha Nagar, Kakinada</span>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <button class="btn btn-orange" style="flex:1; height:42px;" onclick="switchTab('NEW_TOKEN')">
+              🎟️ PLACE ORDER (<span id="nextTokenBadge">#001</span>)
+            </button>
+            <button class="btn btn-outline-gold" style="flex:1; height:42px;" onclick="switchTab('TOKEN_HISTORY')">
+              🍳 PREPARING (<span id="preparingCountBadge">0 Items</span>)
+            </button>
+          </div>
+
+          <div style="margin-bottom:8px;">
+            <input id="menuSearchInput" class="input-field" type="text" placeholder="🔍 Search Shawarma, Grill, Special, Rumali..." oninput="renderMenu()" />
+          </div>
+          <div id="categoryChipsRow" class="chip-row"></div>
+          <div id="menuListContainer"></div>
+        </div>
+
+        <!-- RIGHT: CHECKOUT & PAYMENT SUMMARY PANEL -->
+        <div class="card" style="position:sticky; top:68px;">
+          <div class="section-title">
+            <span>🧾 ORDER CHECKOUT (<span id="checkoutTokenLabel">#001</span>)</span>
+            <button class="btn btn-outline-red" style="padding:4px 10px; font-size:11px;" onclick="clearCart()">Clear</button>
+          </div>
+
+          <!-- Order Type -->
+          <div style="display:flex; gap:6px; margin-bottom:10px;">
+            <button id="orderTypeDineIn" class="chip active" style="flex:1; text-align:center;" onclick="setOrderType('DINE_IN')">🍽️ Dine-In</button>
+            <button id="orderTypeTakeaway" class="chip" style="flex:1; text-align:center;" onclick="setOrderType('TAKEAWAY')">🛍️ Takeaway</button>
+            <button id="orderTypeParcel" class="chip" style="flex:1; text-align:center;" onclick="setOrderType('PARCEL')">📦 Parcel</button>
+          </div>
+
+          <!-- Customer Mobile, Customer Name & Token Override -->
+          <div style="display:grid; grid-template-columns: 1.2fr 1fr 0.7fr; gap:8px; margin-bottom:10px;">
+            <div>
+              <label class="input-label">Customer Mobile (+91 WhatsApp)</label>
+              <input id="customerPhoneInput" class="input-field" type="tel" placeholder="e.g. 9876543210" oninput="renderCheckout()" />
+            </div>
+            <div>
+              <label class="input-label">Customer Name (Optional)</label>
+              <input id="customerNameInput" class="input-field" type="text" placeholder="Customer Name" />
+            </div>
+            <div>
+              <label class="input-label">Token #</label>
+              <input id="customTokenInput" class="input-field" type="number" placeholder="Auto" oninput="renderCheckout()" />
+            </div>
+          </div>
+
+          <!-- Discount Row -->
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
+            <div>
+              <label class="input-label">Discount Type</label>
+              <select id="discountTypeSelect" class="input-field" onchange="renderCheckout()">
+                <option value="NONE">No Discount</option>
+                <option value="PERCENT">Discount (%)</option>
+                <option value="FLAT">Flat Discount (₹)</option>
+              </select>
+            </div>
+            <div>
+              <label class="input-label">Discount Value</label>
+              <input id="discountValueInput" class="input-field" type="number" placeholder="0" oninput="renderCheckout()" />
+            </div>
+          </div>
+
+          <!-- Cart Items List -->
+          <div id="cartItemsContainer" style="max-height:200px; overflow-y:auto; margin-bottom:10px; padding:8px; border-radius:10px; background:var(--surface-variant);"></div>
+
+          <!-- Totals -->
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-top:1px solid rgba(255,255,255,0.12); margin-bottom:8px;">
+            <span style="font-weight:800; color:var(--text-muted);">PAYABLE TOTAL:</span>
+            <span id="payableTotalText" style="font-size:22px; font-weight:900; color:var(--gold);">₹0</span>
+          </div>
+
+          <!-- Payment Method Section (Matching Reference Screenshot) -->
+          <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border-gold); border-radius:14px; padding:12px; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-size:12px; font-weight:900; color:var(--gold);">Payment Method</span>
+              <span id="paymentSummaryBadge" style="font-size:11px; font-weight:800; color:var(--green);">Select Payment</span>
+            </div>
+            <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">
+              Select Cash, UPI/Online, or Both (50% Cash + 50% UPI) & enter amount below:
+            </div>
+
+            <div style="display:flex; gap:6px; margin-bottom:8px;">
+              <button id="payBtnCash" class="chip active" style="flex:1; text-align:center;" onclick="togglePaymentMethod('CASH')">💵 CASH</button>
+              <button id="payBtnUpi" class="chip" style="flex:1; text-align:center;" onclick="togglePaymentMethod('UPI')">📲 UPI/ONLINE</button>
+              <button id="payBtnOther" class="chip" style="flex:0.8; text-align:center;" onclick="togglePaymentMethod('OTHER')">💳 OTHER</button>
+            </div>
+            <button id="payBtnSplit" class="btn btn-outline-gold" style="width:100%; margin-bottom:8px; padding:7px;" onclick="selectBothCashAndUpi()">
+              ⚡ Select Both: 50% CASH + 50% UPI (Manual Split)
+            </button>
+
+            <!-- Bottom Manual Box 1: Cash Received (₹) -->
+            <div id="cashBottomBox" class="payment-bottom-box">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label class="input-label" style="color:var(--green); margin:0;">Cash Received (₹)</label>
+                <button class="btn btn-green" style="padding:3px 8px; font-size:10px;" onclick="fillRemainingPayment('CASH')">Fill Cash</button>
+              </div>
+              <input id="cashManualInput" class="input-field" type="number" placeholder="Enter Cash Received (₹)" oninput="onManualPaymentInput()" />
+              <div id="cashChangeText" style="font-size:11px; font-weight:800; color:var(--gold); margin-top:4px;"></div>
+            </div>
+
+            <!-- Bottom Manual Box 2: UPI / Online Amount (₹) -->
+            <div id="upiBottomBox" class="payment-bottom-box upi-box hidden">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label class="input-label" style="color:var(--whatsapp); margin:0;">UPI / Online Amount (₹)</label>
+                <button class="btn btn-whatsapp" style="padding:3px 8px; font-size:10px;" onclick="fillRemainingPayment('UPI')">Fill UPI</button>
+              </div>
+              <input id="upiManualInput" class="input-field" type="number" placeholder="Enter UPI Amount (₹)" oninput="onManualPaymentInput()" />
+            </div>
+
+            <!-- Bottom Manual Box 3: Other Payment Amount (₹) -->
+            <div id="otherBottomBox" class="payment-bottom-box other-box hidden">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label class="input-label" style="color:var(--gold); margin:0;">Other Payment Amount (₹)</label>
+                <button class="btn btn-outline-gold" style="padding:3px 8px; font-size:10px;" onclick="fillRemainingPayment('OTHER')">Fill Other</button>
+              </div>
+              <input id="otherManualInput" class="input-field" type="number" placeholder="Enter Other Amount (₹)" oninput="onManualPaymentInput()" />
+            </div>
+
+            <div id="paymentEligibilityMsg" style="margin-top:8px; font-size:11px; font-weight:800; color:var(--gold);"></div>
+          </div>
+
+          <button id="placeOrderBtn" class="btn btn-orange" style="width:100%; height:50px; font-size:14px;" onclick="placeOrder()">
+            PLACE ORDER & GENERATE INVOICE
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: PREPARING FOOD -->
+    <div id="tabPreparingFood" class="hidden">
+      <div class="card">
+        <div class="section-title">
+          <span>🍳 PREPARING FOOD STATUS QUEUE</span>
+          <button class="btn btn-orange" onclick="switchTab('NEW_TOKEN')">+ Place New Order</button>
+        </div>
+        <div id="preparingOrdersContainer"></div>
+      </div>
+    </div>
+
+    <!-- TAB 3: SETTLEMENT REPORT -->
+    <div id="tabSettlement" class="hidden">
+      <div id="settlementLiveBanner" class="card" style="border-color:var(--green);"></div>
+      <div class="card">
+        <div class="section-title">
+          <span>📊 FINAL SETTLEMENT REPORT (IST)</span>
+          <button class="btn btn-whatsapp" onclick="shareSettlementWhatsApp()">📲 Share Settlement on WhatsApp</button>
+        </div>
+        <div id="settlementPeriodChips" class="chip-row"></div>
+        <div id="settlementKpiContainer" class="kpi-grid"></div>
+        <div id="settlementBreakdownContainer"></div>
+      </div>
+    </div>
+
+    <!-- TAB 4: CUSTOMER MOBILE DATA ANALYTICS REPORT -->
+    <div id="tabAnalytics" class="hidden">
+      <div id="analyticsLiveBanner" class="card" style="border-color:var(--gold);"></div>
+      <div class="card">
+        <div class="section-title">
+          <span>📈 CUSTOMER MOBILE DATA ANALYTICS REPORT</span>
+          <button class="btn btn-whatsapp" onclick="shareAnalyticsWhatsApp()">📲 Share Analytics Report</button>
+        </div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">
+          Ranked Top-to-Bottom: Highest number of times purchased at the TOP, lowest at the BOTTOM.
+        </div>
+        <div id="analyticsPeriodChips" class="chip-row"></div>
+        <div style="margin-bottom:10px;">
+          <input id="analyticsSearchInput" class="input-field" type="text" placeholder="🔍 Search Customer Mobile Number (+91)..." oninput="renderAnalytics()" />
+        </div>
+        <div id="analyticsOverallSummary"></div>
+        <div id="analyticsCustomerList"></div>
+      </div>
+    </div>
+
+    <!-- TAB 5: MENU & SYNC -->
+    <div id="tabMenuSync" class="hidden">
+      <div class="card">
+        <div class="section-title">
+          <span>👤 ACCOUNT, LOGIN SWITCH & DATA BACKUP</span>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+          <button class="btn btn-orange" onclick="quickSwitchToUser('jkshawarma')">Switch to jkshawarma (Live Reports Only)</button>
+          <button class="btn btn-outline-gold" onclick="logoutPos()">Logout / Switch User</button>
+          <button class="btn btn-green" onclick="exportOrdersJson()">⬇️ Export Orders JSON</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">
+          <span>🍴 ADD OR UPDATE MENU ITEM</span>
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:8px; margin-bottom:10px;">
+          <input id="newMenuName" class="input-field" placeholder="Item Name" />
+          <select id="newMenuCategory" class="input-field">
+            <option value="CHICKEN SHAWARMA">CHICKEN SHAWARMA</option>
+            <option value="JK SPECIAL SHAWARMA">JK SPECIAL SHAWARMA</option>
+            <option value="GRILLED CHICKEN">GRILLED CHICKEN</option>
+            <option value="VEG SHAWARMA">VEG SHAWARMA</option>
+            <option value="BREADS & EXTRAS">BREADS & EXTRAS</option>
+          </select>
+          <input id="newMenuPrice" class="input-field" type="number" placeholder="Price (₹)" />
+        </div>
+        <button class="btn btn-orange" onclick="saveNewMenuItem()">+ Save Menu Item</button>
+      </div>
+
+      <div class="card">
+        <div class="section-title">
+          <span>📋 RESTAURANT MENU & PRICE LIST (<span id="menuSyncCountLabel">25</span> Items)</span>
+          <button class="btn btn-outline-gold" onclick="resetDefaultMenu()">Reset Default Menu</button>
+        </div>
+        <div id="menuSyncCatalogList"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAVIGATION BAR -->
+  <div id="bottomNav" class="bottom-nav hidden"></div>
+
+  <!-- INVOICE RECEIPT MODAL -->
+  <div id="receiptModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="section-title">
+        <span id="modalReceiptTitle">TOKEN INVOICE #001</span>
+        <button class="btn btn-outline-gold" style="padding:4px 10px;" onclick="closeReceiptModal()">✕ Close</button>
+      </div>
+      <div id="modalReceiptBubble" class="whatsapp-receipt-bubble"></div>
+      <div id="modalCustomerAnalyticsCard" style="margin-top:10px;"></div>
+      <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn-whatsapp" style="flex:1; height:44px;" onclick="sendModalReceiptWhatsApp()">📲 Send on WhatsApp</button>
+        <button class="btn btn-outline-gold" style="flex:1; height:44px;" onclick="copyModalReceipt()">📋 Copy Invoice</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SWITCH LOGIN MODAL -->
+  <div id="switchLoginModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="section-title">
+        <span>⇄ LOGIN / SWITCH USER OR LOGOUT</span>
+        <button class="btn btn-outline-gold" style="padding:4px 10px;" onclick="closeSwitchLoginModal()">✕</button>
+      </div>
+      <div style="display:flex; gap:8px; margin-bottom:10px;">
+        <button class="btn btn-orange" style="flex:1;" onclick="fillModalRole('janiads')">1. POS Admin (janiads)</button>
+        <button class="btn btn-green" style="flex:1;" onclick="fillModalRole('jkshawarma')">2. Reports Only (jkshawarma)</button>
+      </div>
+      <div style="margin-bottom:8px;">
+        <label class="input-label">User ID</label>
+        <input id="modalUserId" class="input-field" value="jkshawarma" />
+      </div>
+      <div style="margin-bottom:10px;">
+        <label class="input-label">Password</label>
+        <input id="modalPassword" class="input-field" type="password" value="jilani001" />
+      </div>
+      <div id="modalLoginError" style="color:var(--red); font-size:12px; margin-bottom:8px; display:none;"></div>
+      <button class="btn btn-orange" style="width:100%; height:44px; margin-bottom:8px;" onclick="confirmModalSwitchUser()">
+        LOGIN & SWITCH USER NOW
+      </button>
+      <button class="btn btn-outline-gold" style="width:100%; height:40px;" onclick="logoutPos()">
+        Logout to Main Login Page
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const RESTAURANT = {
+      FULL_NAME: "JK ARABIAN SHAWARMA & GRILL HOUSE",
+      ADDRESS: "RTO Office Road, Siddhardha Nagar, Kakinada",
+      CONTACT: "86885 53379",
+      DEVELOPER_CREDIT: "Developed by JANI ADS"
+    };
+
+    const DEFAULT_MENU = [
+      // VEG SHAWARMA
+      { id: "veg_lays_shawarma", name: "Veg Lays Shawarma", category: "VEG SHAWARMA", price: 90, isVeg: true, isAvailable: true },
+      { id: "veg_panner_shawarma", name: "Veg Paneer Shawarma", category: "VEG SHAWARMA", price: 110, isVeg: true, isAvailable: true },
+      { id: "veg_loaded_bag_shawarma", name: "Veg Loaded Bag Shawarma", category: "VEG SHAWARMA", price: 130, isVeg: true, isAvailable: true },
+
+      // GRILLED CHICKEN
+      { id: "full_grill_chicken", name: "Full Grill Chicken", category: "GRILLED CHICKEN", price: 500, isVeg: false, isAvailable: true },
+      { id: "half_grill_chicken", name: "Half Grill Chicken", category: "GRILLED CHICKEN", price: 280, isVeg: false, isAvailable: true },
+
+      // CHICKEN SHAWARMA (WITH SALAD)
+      { id: "chicken_shawarma", name: "Chicken Shawarma", category: "CHICKEN SHAWARMA", price: 110, isVeg: false, isAvailable: true },
+      { id: "peri_peri_chicken_shawarma", name: "Peri Peri Chicken Shawarma", category: "CHICKEN SHAWARMA", price: 130, isVeg: false, isAvailable: true },
+      { id: "barbeque_chicken_shawarma", name: "Barbeque Chicken Shawarma", category: "CHICKEN SHAWARMA", price: 130, isVeg: false, isAvailable: true },
+      { id: "schezwan_chicken_shawarma", name: "Schezwan Chicken Shawarma", category: "CHICKEN SHAWARMA", price: 140, isVeg: false, isAvailable: true },
+      { id: "cheese_chicken_shawarma", name: "Cheese Chicken Shawarma", category: "CHICKEN SHAWARMA", price: 140, isVeg: false, isAvailable: true },
+      { id: "kaju_chicken_shawarma", name: "Kaju Chicken Shawarma", category: "CHICKEN SHAWARMA", price: 140, isVeg: false, isAvailable: true },
+      { id: "loaded_jumbo_shawarma", name: "Loaded Jumbo Shawarma", category: "CHICKEN SHAWARMA", price: 170, isVeg: false, isAvailable: true },
+      { id: "loaded_bowl_shawarma", name: "Loaded Bowl Shawarma", category: "CHICKEN SHAWARMA", price: 170, isVeg: false, isAvailable: true },
+      { id: "jk_special_shawarma", name: "JK Special Shawarma", category: "CHICKEN SHAWARMA", price: 180, isVeg: false, isAvailable: true },
+      { id: "loaded_bag_shawaram", name: "Loaded bag shawaram", category: "CHICKEN SHAWARMA", price: 190, isVeg: false, isAvailable: true },
+      { id: "jk_pot_shawarma", name: "JK Pot Shawarma", category: "CHICKEN SHAWARMA", price: 190, isVeg: false, isAvailable: true },
+
+      // JK SPECIAL SHAWARMA
+      { id: "special_chicken_shawarma", name: "Special Chicken Shawarma", category: "JK SPECIAL SHAWARMA", price: 150, isVeg: false, isAvailable: true },
+      { id: "special_peri_peri_shawarma", name: "Special Peri Peri Shawarma", category: "JK SPECIAL SHAWARMA", price: 170, isVeg: false, isAvailable: true },
+      { id: "special_schezwan_shawarma", name: "Special Schezwan Shawarma", category: "JK SPECIAL SHAWARMA", price: 180, isVeg: false, isAvailable: true },
+      { id: "special_cheese_shawarma", name: "Special Cheese Shawarma", category: "JK SPECIAL SHAWARMA", price: 180, isVeg: false, isAvailable: true },
+      { id: "special_kaju_shawarma", name: "Special Kaju Shawarma", category: "JK SPECIAL SHAWARMA", price: 180, isVeg: false, isAvailable: true },
+      { id: "special_loaded_jumbo", name: "Special Loaded Jumbo", category: "JK SPECIAL SHAWARMA", price: 220, isVeg: false, isAvailable: true },
+
+      // BREADS & EXTRAS
+      { id: "rumali_roti", name: "Rumali Roti", category: "BREADS & EXTRAS", price: 25, isVeg: true, isAvailable: true },
+      { id: "mayonnaise_extra", name: "Mayonnaise (Extra)", category: "BREADS & EXTRAS", price: 20, isVeg: true, isAvailable: true },
+      { id: "pudina_chutney_extra", name: "Pudina Chutney (Extra)", category: "BREADS & EXTRAS", price: 20, isVeg: true, isAvailable: true }
+    ];
+
+    let state = {
+      loggedIn: localStorage.getItem("jk_pos_logged_in") === "true",
+      userId: localStorage.getItem("jk_pos_user_id") || "janiads",
+      role: localStorage.getItem("jk_pos_role") || "FULL_POS_ADMIN",
+      currentTab: "NEW_TOKEN",
+      selectedCategory: "ALL",
+      orderType: "DINE_IN",
+      cart: {},
+      isCashSelected: true,
+      isUpiSelected: false,
+      isOtherSelected: false,
+      settlementPeriod: "TODAY",
+      analyticsPeriod: "MONTHLY",
+      activeModalOrder: null,
+      menu: JSON.parse(localStorage.getItem("jk_pos_menu") || "null") || DEFAULT_MENU,
+      orders: JSON.parse(localStorage.getItem("jk_pos_orders") || "[]")
+    };
+
+    // Indian Standard Time (Asia/Kolkata) Helpers
+    function getIstNowParts() {
+      const now = new Date();
+      const fmtDateKey = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" });
+      const dateKey = fmtDateKey.format(now); // yyyy-MM-dd
+      const [yyyy, mm, dd] = dateKey.split("-");
+      const dateDisplay = `${dd}/${mm}/${yyyy.slice(2)}`;
+      const timeDisplay = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Kolkata",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+      }).format(now).toLowerCase();
+      return { dateKey, dateDisplay, timeDisplay };
+    }
+
+    function updateIstClock() {
+      const { dateDisplay, timeDisplay } = getIstNowParts();
+      const el = document.getElementById("liveIstClock");
+      if (el) el.textContent = `🇮🇳 IST: ${timeDisplay.toUpperCase()} • ${dateDisplay}`;
+    }
+    setInterval(updateIstClock, 5000);
+    updateIstClock();
+
+    function verifyCredentials(user, pass) {
+      const u = (user || "").trim().toLowerCase();
+      const p = (pass || "").trim().toLowerCase();
+      if ((u === "janiads" || u === "janidigitalads@gmail.com") && p === "janiads001") {
+        return { userId: "janiads", role: "FULL_POS_ADMIN" };
+      }
+      if (u === "jkshawarma" && p === "jilani001") {
+        return { userId: "jkshawarma", role: "REPORTS_VIEWER_ONLY" };
+      }
+      return null;
+    }
+
+    function fillLoginRole(roleUser) {
+      const uInput = document.getElementById("loginUserId");
+      const pInput = document.getElementById("loginPassword");
+      const infoBox = document.getElementById("loginRoleInfoBox");
+      const submitBtn = document.getElementById("loginSubmitBtn");
+      if (roleUser === "jkshawarma") {
+        uInput.value = "jkshawarma";
+        pInput.value = "jilani001";
+        infoBox.innerHTML = `<strong style="color:var(--green);">SECOND USER: LIVE REPORTS VIEWER ONLY (jkshawarma)</strong>
+          <div style="color:var(--text-muted); margin-top:2px;">• Can login on another device to view Live Settlement & Customer Analytics only. Cannot add, edit, or place orders.</div>`;
+        submitBtn.textContent = "LOGIN TO LIVE REPORTS ONLY (jkshawarma)";
+        submitBtn.className = "btn btn-green";
+      } else {
+        uInput.value = "janiads";
+        pInput.value = "Janiads001";
+        infoBox.innerHTML = `<strong style="color:var(--gold);">PRIMARY POS USER: janiads (janidigitalads@gmail.com)</strong>
+          <div style="color:var(--text-muted); margin-top:2px;">• Full POS Order Billing + Live Reports Sync.</div>`;
+        submitBtn.textContent = "LOGIN TO POS & LIVE SYNC (janiads)";
+        submitBtn.className = "btn btn-orange";
+      }
+    }
+
+    function submitLogin() {
+      const u = document.getElementById("loginUserId").value;
+      const p = document.getElementById("loginPassword").value;
+      const verified = verifyCredentials(u, p);
+      const errEl = document.getElementById("loginError");
+      if (!verified) {
+        errEl.style.display = "block";
+        errEl.textContent = "Invalid login! Use janiads / Janiads001 or jkshawarma / jilani001.";
+        return;
+      }
+      errEl.style.display = "none";
+      applySession(verified.userId, verified.role);
+    }
+
+    function applySession(userId, role) {
+      state.loggedIn = true;
+      state.userId = userId;
+      state.role = role;
+      localStorage.setItem("jk_pos_logged_in", "true");
+      localStorage.setItem("jk_pos_user_id", userId);
+      localStorage.setItem("jk_pos_role", role);
+      state.currentTab = role === "REPORTS_VIEWER_ONLY" ? "SETTLEMENT" : "NEW_TOKEN";
+      renderApp();
+    }
+
+    function logoutPos() {
+      state.loggedIn = false;
+      localStorage.setItem("jk_pos_logged_in", "false");
+      closeSwitchLoginModal();
+      renderApp();
+    }
+
+    function openSwitchLoginModal() {
+      document.getElementById("switchLoginModal").classList.remove("hidden");
+      fillModalRole(state.role === "REPORTS_VIEWER_ONLY" ? "janiads" : "jkshawarma");
+    }
+    function closeSwitchLoginModal() {
+      document.getElementById("switchLoginModal").classList.add("hidden");
+    }
+    function fillModalRole(target) {
+      document.getElementById("modalUserId").value = target;
+      document.getElementById("modalPassword").value = target === "jkshawarma" ? "jilani001" : "Janiads001";
+      document.getElementById("modalLoginError").style.display = "none";
+    }
+    function confirmModalSwitchUser() {
+      const u = document.getElementById("modalUserId").value;
+      const p = document.getElementById("modalPassword").value;
+      const verified = verifyCredentials(u, p);
+      if (!verified) {
+        const err = document.getElementById("modalLoginError");
+        err.style.display = "block";
+        err.textContent = "Invalid credentials! Use janiads / Janiads001 or jkshawarma / jilani001.";
+        return;
+      }
+      closeSwitchLoginModal();
+      applySession(verified.userId, verified.role);
+    }
+    function quickSwitchToUser(userId) {
+      if (userId === "jkshawarma") applySession("jkshawarma", "REPORTS_VIEWER_ONLY");
+      else applySession("janiads", "FULL_POS_ADMIN");
+    }
+
+    function isReportsOnly() {
+      return state.role === "REPORTS_VIEWER_ONLY";
+    }
+
+    function switchTab(tab) {
+      if (isReportsOnly() && tab !== "SETTLEMENT" && tab !== "CUSTOMER_ANALYTICS") {
+        state.currentTab = "SETTLEMENT";
+      } else {
+        state.currentTab = tab;
+      }
+      renderApp();
+    }
+
+    function getNextTokenNumber() {
+      const overrideVal = parseInt(document.getElementById("customTokenInput")?.value || "", 10);
+      if (!isNaN(overrideVal) && overrideVal >= 1) return overrideVal;
+      const { dateKey } = getIstNowParts();
+      const todayOrders = state.orders.filter(o => o.dateKey === dateKey);
+      const maxToken = todayOrders.reduce((m, o) => Math.max(m, o.tokenNumber || 0), 0);
+      return maxToken + 1;
+    }
+
+    function formatTokenSerial(num) {
+      return "#" + String(num).padStart(3, "0");
+    }
+
+    function renderApp() {
+      const loginScr = document.getElementById("loginScreen");
+      const appScr = document.getElementById("appScreen");
+      const topBar = document.getElementById("topCornerBar");
+      const bottomNav = document.getElementById("bottomNav");
+
+      if (!state.loggedIn) {
+        loginScr.classList.remove("hidden");
+        appScr.classList.add("hidden");
+        topBar.classList.add("hidden");
+        bottomNav.classList.add("hidden");
+        return;
+      }
+
+      loginScr.classList.add("hidden");
+      appScr.classList.remove("hidden");
+      topBar.classList.remove("hidden");
+      bottomNav.classList.remove("hidden");
+
+      const badge = document.getElementById("activeUserBadge");
+      const title = document.getElementById("activeUserTitle");
+      if (isReportsOnly()) {
+        badge.classList.add("reports-only");
+        title.textContent = "USER: jkshawarma (LIVE REPORTS ONLY) • v5.1";
+      } else {
+        badge.classList.remove("reports-only");
+        title.textContent = `USER: ${state.userId} (POS ADMIN) • v5.1`;
+      }
+      updateIstClock();
+
+      // Render Bottom Tabs (Restricted for jkshawarma)
+      const tabs = isReportsOnly()
+        ? [
+            { id: "SETTLEMENT", label: "📊 Settlement" },
+            { id: "CUSTOMER_ANALYTICS", label: "📈 Analytics" }
+          ]
+        : [
+            { id: "NEW_TOKEN", label: "🎟️ Place Order" },
+            { id: "TOKEN_HISTORY", label: "🍳 Preparing Food" },
+            { id: "SETTLEMENT", label: "📊 Settlement" },
+            { id: "CUSTOMER_ANALYTICS", label: "📈 Analytics" },
+            { id: "MENU_SYNC", label: "🍴 Menu & Sync" }
+          ];
+
+      bottomNav.innerHTML = tabs.map(t =>
+        `<button class="nav-item ${state.currentTab === t.id ? 'active' : ''}" onclick="switchTab('${t.id}')">${t.label}</button>`
+      ).join("");
+
+      document.getElementById("tabPlaceOrder").classList.toggle("hidden", state.currentTab !== "NEW_TOKEN");
+      document.getElementById("tabPreparingFood").classList.toggle("hidden", state.currentTab !== "TOKEN_HISTORY");
+      document.getElementById("tabSettlement").classList.toggle("hidden", state.currentTab !== "SETTLEMENT");
+      document.getElementById("tabAnalytics").classList.toggle("hidden", state.currentTab !== "CUSTOMER_ANALYTICS");
+      document.getElementById("tabMenuSync").classList.toggle("hidden", state.currentTab !== "MENU_SYNC");
+
+      if (state.currentTab === "NEW_TOKEN") {
+        renderMenu();
+        renderCheckout();
+      } else if (state.currentTab === "TOKEN_HISTORY") {
+        renderPreparingFood();
+      } else if (state.currentTab === "SETTLEMENT") {
+        renderSettlement();
+      } else if (state.currentTab === "CUSTOMER_ANALYTICS") {
+        renderAnalytics();
+      } else if (state.currentTab === "MENU_SYNC") {
+        renderMenuSync();
+      }
+    }
+
+    function renderMenu() {
+      const categories = ["ALL", "CHICKEN SHAWARMA", "JK SPECIAL SHAWARMA", "GRILLED CHICKEN", "VEG SHAWARMA", "BREADS & EXTRAS"];
+      const availMenu = state.menu.filter(m => m.isAvailable !== false);
+      document.getElementById("categoryChipsRow").innerHTML = categories.map(c =>
+        `<button class="chip ${state.selectedCategory === c ? 'active' : ''}" onclick="state.selectedCategory='${c}'; renderMenu();">${c === 'ALL' ? 'ALL MENU (' + availMenu.length + ')' : c}</button>`
+      ).join("");
+
+      const searchQ = (document.getElementById("menuSearchInput")?.value || "").trim().toLowerCase();
+      const filtered = availMenu.filter(m =>
+        (state.selectedCategory === "ALL" || m.category === state.selectedCategory) &&
+        (!searchQ || m.name.toLowerCase().includes(searchQ) || m.category.toLowerCase().includes(searchQ))
+      );
+      const grouped = {};
+      filtered.forEach(m => {
+        if (!grouped[m.category]) grouped[m.category] = [];
+        grouped[m.category].push(m);
+      });
+
+      let html = "";
+      Object.keys(grouped).forEach(cat => {
+        html += `<div class="category-banner">${cat === 'CHICKEN SHAWARMA' ? 'CHICKEN SHAWARMA (WITH SALAD)' : cat}</div>`;
+        grouped[cat].forEach(item => {
+          const qty = state.cart[item.id]?.quantity || 0;
+          html += `
+            <div class="menu-item-card ${qty > 0 ? 'in-cart' : ''}">
+              <div>
+                <div style="font-weight:800; font-size:14px;">
+                  <span class="veg-dot ${item.isVeg ? 'veg' : 'nonveg'}"></span>${item.name}
+                </div>
+                <div style="color:var(--gold); font-weight:900; font-size:14px; margin-top:2px;">₹${item.price}</div>
+              </div>
+              <div class="qty-controls">
+                ${qty > 0 ? `
+                  <button class="qty-btn" onclick="changeQty('${item.id}', -1)">−</button>
+                  <span style="font-weight:900; min-width:22px; text-align:center;">${qty}</span>
+                  <button class="qty-btn" onclick="changeQty('${item.id}', 1)">+</button>
+                ` : `
+                  <button class="btn btn-orange" onclick="changeQty('${item.id}', 1)">+ ADD</button>
+                `}
+              </div>
+            </div>
+          `;
+        });
+      });
+      document.getElementById("menuListContainer").innerHTML = html || `<div style="padding:16px; color:var(--text-muted); text-align:center;">No matching menu items found.</div>`;
+    }
+
+    function changeQty(itemId, delta) {
+      if (isReportsOnly()) return;
+      const item = state.menu.find(m => m.id === itemId);
+      if (!item) return;
+      const current = state.cart[itemId]?.quantity || 0;
+      const next = current + delta;
+      if (next <= 0) delete state.cart[itemId];
+      else state.cart[itemId] = { item, quantity: next };
+      renderMenu();
+      renderCheckout();
+    }
+
+    function clearCart() {
+      state.cart = {};
+      document.getElementById("cashManualInput").value = "";
+      document.getElementById("upiManualInput").value = "";
+      document.getElementById("otherManualInput").value = "";
+      if (document.getElementById("discountTypeSelect")) document.getElementById("discountTypeSelect").value = "NONE";
+      if (document.getElementById("discountValueInput")) document.getElementById("discountValueInput").value = "";
+      renderMenu();
+      renderCheckout();
+    }
+
+    function setOrderType(type) {
+      state.orderType = type;
+      document.getElementById("orderTypeDineIn").classList.toggle("active", type === "DINE_IN");
+      document.getElementById("orderTypeTakeaway").classList.toggle("active", type === "TAKEAWAY");
+      document.getElementById("orderTypeParcel").classList.toggle("active", type === "PARCEL");
+    }
+
+    function getSubtotal() {
+      return Object.values(state.cart).reduce((sum, entry) => sum + entry.item.price * entry.quantity, 0);
+    }
+
+    function getDiscountAmount() {
+      const sub = getSubtotal();
+      const dType = document.getElementById("discountTypeSelect")?.value || "NONE";
+      const dVal = parseInt(document.getElementById("discountValueInput")?.value || "0", 10) || 0;
+      if (dType === "PERCENT" && dVal > 0) {
+        return Math.min(sub, Math.round((sub * Math.min(100, dVal)) / 100));
+      }
+      if (dType === "FLAT" && dVal > 0) {
+        return Math.min(sub, dVal);
+      }
+      return 0;
+    }
+
+    function getPayableTotal() {
+      return Math.max(0, getSubtotal() - getDiscountAmount());
+    }
+
+    function togglePaymentMethod(method) {
+      const cashVal = parseInt(document.getElementById("cashManualInput").value || "0", 10) || 0;
+      const upiVal = parseInt(document.getElementById("upiManualInput").value || "0", 10) || 0;
+      if (method === "CASH") {
+        if (state.isCashSelected && (state.isUpiSelected || state.isOtherSelected)) {
+          state.isCashSelected = false;
+          document.getElementById("cashManualInput").value = "";
+        } else {
+          state.isCashSelected = true;
+          if (upiVal === 0) state.isUpiSelected = false;
+        }
+      } else if (method === "UPI") {
+        if (state.isUpiSelected && (state.isCashSelected || state.isOtherSelected)) {
+          state.isUpiSelected = false;
+          document.getElementById("upiManualInput").value = "";
+        } else {
+          state.isUpiSelected = true;
+          if (cashVal === 0) state.isCashSelected = false;
+        }
+      } else if (method === "OTHER") {
+        state.isOtherSelected = !state.isOtherSelected;
+        if (!state.isOtherSelected) document.getElementById("otherManualInput").value = "";
+      }
+      if (!state.isCashSelected && !state.isUpiSelected && !state.isOtherSelected) {
+        state.isCashSelected = true;
+      }
+      renderCheckout();
+    }
+
+    function selectBothCashAndUpi() {
+      state.isCashSelected = true;
+      state.isUpiSelected = true;
+      const total = getPayableTotal();
+      if (total > 0) {
+        const half = Math.floor(total / 2);
+        document.getElementById("cashManualInput").value = half;
+        document.getElementById("upiManualInput").value = total - half;
+      }
+      renderCheckout();
+    }
+
+    function fillRemainingPayment(target) {
+      const total = getPayableTotal();
+      const c = parseInt(document.getElementById("cashManualInput").value || "0", 10) || 0;
+      const u = parseInt(document.getElementById("upiManualInput").value || "0", 10) || 0;
+      const o = parseInt(document.getElementById("otherManualInput").value || "0", 10) || 0;
+      if (target === "CASH") {
+        document.getElementById("cashManualInput").value = Math.max(0, total - u - o);
+      } else if (target === "UPI") {
+        document.getElementById("upiManualInput").value = Math.max(0, total - c - o);
+      } else if (target === "OTHER") {
+        document.getElementById("otherManualInput").value = Math.max(0, total - c - u);
+      }
+      renderCheckout();
+    }
+
+    function onManualPaymentInput() {
+      renderCheckout();
+    }
+
+    function renderCheckout() {
+      const nextToken = getNextTokenNumber();
+      const tokenStr = formatTokenSerial(nextToken);
+      document.getElementById("nextTokenBadge").textContent = tokenStr;
+      document.getElementById("checkoutTokenLabel").textContent = tokenStr;
+
+      const activeOrders = state.orders.filter(o => o.status === "ACTIVE");
+      const activeQty = activeOrders.reduce((s, o) => s + (o.totalQuantity || 0), 0);
+      document.getElementById("preparingCountBadge").textContent = `${activeQty} Items`;
+
+      const entries = Object.values(state.cart);
+      const cartEl = document.getElementById("cartItemsContainer");
+      if (entries.length === 0) {
+        cartEl.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:12px;">Tap menu items on the left to add to order</div>`;
+      } else {
+        cartEl.innerHTML = entries.map(e => `
+          <div style="display:flex; justify-content:space-between; font-size:13px; padding:4px 0;">
+            <span>${e.item.name} x ${e.quantity}</span>
+            <strong style="color:var(--gold);">₹${e.item.price * e.quantity}</strong>
+          </div>
+        `).join("");
+      }
+
+      const total = getPayableTotal();
+      document.getElementById("payableTotalText").textContent = `₹${total}`;
+
+      document.getElementById("payBtnCash").classList.toggle("active", state.isCashSelected);
+      document.getElementById("payBtnUpi").classList.toggle("active", state.isUpiSelected);
+      document.getElementById("payBtnOther").classList.toggle("active", state.isOtherSelected);
+
+      document.getElementById("cashBottomBox").classList.toggle("hidden", !state.isCashSelected);
+      document.getElementById("upiBottomBox").classList.toggle("hidden", !state.isUpiSelected);
+      document.getElementById("otherBottomBox").classList.toggle("hidden", !state.isOtherSelected);
+
+      const cVal = parseInt(document.getElementById("cashManualInput").value || "0", 10) || 0;
+      const uVal = parseInt(document.getElementById("upiManualInput").value || "0", 10) || 0;
+      const oVal = parseInt(document.getElementById("otherManualInput").value || "0", 10) || 0;
+      const enteredSum = (state.isCashSelected ? cVal : 0) + (state.isUpiSelected ? uVal : 0) + (state.isOtherSelected ? oVal : 0);
+
+      const parts = [];
+      if (state.isCashSelected) parts.push(`Cash: ₹${cVal}`);
+      if (state.isUpiSelected) parts.push(`UPI: ₹${uVal}`);
+      if (state.isOtherSelected) parts.push(`Other: ₹${oVal}`);
+      document.getElementById("paymentSummaryBadge").textContent = parts.join(" + ");
+
+      const changeEl = document.getElementById("cashChangeText");
+      if (enteredSum > total && total > 0) {
+        changeEl.textContent = `Change to Return: ₹${enteredSum - total}`;
+      } else {
+        changeEl.textContent = "";
+      }
+
+      const allSelectedFilled =
+        (!state.isCashSelected || cVal > 0) &&
+        (!state.isUpiSelected || uVal > 0) &&
+        (!state.isOtherSelected || oVal > 0);
+      const isEligible = entries.length > 0 && total > 0 && allSelectedFilled && enteredSum >= total;
+
+      const msgEl = document.getElementById("paymentEligibilityMsg");
+      if (entries.length === 0) {
+        msgEl.textContent = "Add items to place order.";
+      } else if (!isEligible) {
+        msgEl.style.color = "var(--gold)";
+        msgEl.textContent = `Enter manual amount in selected box(es). Remaining: ₹${Math.max(0, total - enteredSum)}`;
+      } else {
+        msgEl.style.color = "var(--green)";
+        msgEl.textContent = `✔ Payment Eligible (${parts.join(" + ")})`;
+      }
+
+      document.getElementById("placeOrderBtn").disabled = !isEligible;
+    }
+
+    function placeOrder() {
+      if (isReportsOnly()) return;
+      const entries = Object.values(state.cart);
+      if (entries.length === 0) return;
+      const total = getPayableTotal();
+      const tokenNumber = getNextTokenNumber();
+      const { dateKey, dateDisplay, timeDisplay } = getIstNowParts();
+
+      const cVal = state.isCashSelected ? (parseInt(document.getElementById("cashManualInput").value || "0", 10) || 0) : 0;
+      const uVal = state.isUpiSelected ? (parseInt(document.getElementById("upiManualInput").value || "0", 10) || 0) : 0;
+      const oVal = state.isOtherSelected ? (parseInt(document.getElementById("otherManualInput").value || "0", 10) || 0) : 0;
+
+      const netUpi = Math.min(uVal, total);
+      const netOther = Math.min(oVal, Math.max(0, total - netUpi));
+      const netCash = cVal > 0 ? Math.max(0, total - netUpi - netOther) : 0;
+
+      const labelParts = [];
+      if (netCash > 0) labelParts.push(`Cash ₹${netCash}`);
+      if (netUpi > 0) labelParts.push(`UPI ₹${netUpi}`);
+      if (netOther > 0) labelParts.push(`Other ₹${netOther}`);
+
+      const order = {
+        id: "ord_" + Date.now(),
+        tokenNumber,
+        dateKey,
+        dateDisplay,
+        timeDisplay,
+        orderType: state.orderType,
+        customerPhone: (document.getElementById("customerPhoneInput").value || "").trim(),
+        cashPaidAmount: netCash,
+        upiPaidAmount: netUpi,
+        otherPaidAmount: netOther,
+        paymentBreakdownLabel: labelParts.join(" + ") || `Cash ₹${total}`,
+        totalAmount: total,
+        totalQuantity: entries.reduce((s, e) => s + e.quantity, 0),
+        items: entries.map(e => ({
+          name: e.item.name,
+          category: e.item.category,
+          unitPrice: e.item.price,
+          quantity: e.quantity,
+          lineTotal: e.item.price * e.quantity
+        })),
+        status: "ACTIVE"
+      };
+
+      state.orders.unshift(order);
+      localStorage.setItem("jk_pos_orders", JSON.stringify(state.orders));
+      clearCart();
+      document.getElementById("customTokenInput").value = "";
+      openReceiptModal(order);
+    }
+
+    function buildReceiptText(order) {
+      const divider = "-----------------------------------";
+      const tokenStr = formatTokenSerial(order.tokenNumber);
+      const itemsLines = order.items.map((it, idx) => `${idx + 1}. ${it.name} x ${it.quantity} = ₹${it.lineTotal}`).join("\n");
+      return `*${RESTAURANT.FULL_NAME}*\n${RESTAURANT.ADDRESS}\n${divider}\n*TOKEN INVOICE: ${tokenStr}*\nDate & Time: ${order.dateDisplay}, ${order.timeDisplay}\nOrder Type: ${order.orderType}\n${divider}\n*ITEMS ORDERED:*\n${itemsLines}\n${divider}\n*TOTAL AMOUNT: ₹${order.totalAmount}*\nPayment: ${order.paymentBreakdownLabel}\n${divider}\nThank you for ordering with us!\n_${RESTAURANT.DEVELOPER_CREDIT}_`;
+    }
+
+    function openReceiptModal(order) {
+      state.activeModalOrder = order;
+      const tokenStr = formatTokenSerial(order.tokenNumber);
+      document.getElementById("modalReceiptTitle").textContent = `TOKEN INVOICE ${tokenStr}`;
+      document.getElementById("modalReceiptBubble").innerHTML = `
+        <div style="font-weight:900; font-size:15px;">${RESTAURANT.FULL_NAME}</div>
+        <div>${RESTAURANT.ADDRESS}</div>
+        <div class="mono-divider">-----------------------------------</div>
+        <div style="font-weight:900; font-size:15px;">TOKEN INVOICE: ${tokenStr}</div>
+        <div>Date & Time: ${order.dateDisplay}, ${order.timeDisplay}</div>
+        <div>Order Type: ${order.orderType}</div>
+        ${order.customerPhone ? `<div style="font-weight:800;">Contact No: ${order.customerPhone}</div>` : ""}
+        <div class="mono-divider">-----------------------------------</div>
+        <div style="font-weight:900;">ITEMS ORDERED:</div>
+        ${order.items.map((it, idx) => `<div>${idx + 1}. ${it.name} x ${it.quantity} = ₹${it.lineTotal}</div>`).join("")}
+        <div class="mono-divider">-----------------------------------</div>
+        <div style="font-weight:900; font-size:15px;">TOTAL AMOUNT: ₹${order.totalAmount}</div>
+        <div style="font-weight:800; color:#1B5E20;">Payment: ${order.paymentBreakdownLabel}</div>
+        <div class="mono-divider">-----------------------------------</div>
+        <div>Thank you for ordering with us!</div>
+        <div style="font-style:italic; font-weight:700;">${RESTAURANT.DEVELOPER_CREDIT}</div>
+      `;
+
+      // Separate Category in Invoice Details: Contact Number Purchase Count & Total Billed
+      const analyticsCard = document.getElementById("modalCustomerAnalyticsCard");
+      const cleanPhone = normalizePhone(order.customerPhone);
+      if (cleanPhone) {
+        const custOrders = state.orders.filter(o => o.status !== "CANCELLED" && normalizePhone(o.customerPhone) === cleanPhone);
+        const totalBilled = custOrders.reduce((s, o) => s + o.totalAmount, 0);
+        analyticsCard.innerHTML = `
+          <div style="background:var(--surface-variant); border:1px solid var(--gold); border-radius:12px; padding:10px;">
+            <div style="font-size:11px; font-weight:900; color:var(--gold);">INVOICE CONTACT ANALYTICS (+91 ${cleanPhone})</div>
+            <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:13px; font-weight:800;">
+              <span style="color:var(--green);">Times Purchased: ${custOrders.length} Times</span>
+              <span style="color:var(--gold);">Total Billed: ₹${totalBilled}</span>
+            </div>
+          </div>
+        `;
+      } else {
+        analyticsCard.innerHTML = "";
+      }
+
+      document.getElementById("receiptModal").classList.remove("hidden");
+    }
+
+    function closeReceiptModal() {
+      document.getElementById("receiptModal").classList.add("hidden");
+    }
+
+    function sendModalReceiptWhatsApp() {
+      if (!state.activeModalOrder) return;
+      const text = buildReceiptText(state.activeModalOrder);
+      const clean = normalizePhone(state.activeModalOrder.customerPhone);
+      const url = clean
+        ? `https://api.whatsapp.com/send?phone=91${clean}&text=${encodeURIComponent(text)}`
+        : `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+      window.open(url, "_blank");
+    }
+
+    function copyModalReceipt() {
+      if (!state.activeModalOrder) return;
+      navigator.clipboard.writeText(buildReceiptText(state.activeModalOrder));
+      alert("Invoice copied to clipboard!");
+    }
+
+    function renderPreparingFood() {
+      const active = state.orders.filter(o => o.status === "ACTIVE");
+      const container = document.getElementById("preparingOrdersContainer");
+      if (active.length === 0) {
+        container.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted);">No orders currently in Preparing Food queue.</div>`;
+        return;
+      }
+      container.innerHTML = active.map(o => `
+        <div class="menu-item-card" style="margin-bottom:10px;">
+          <div>
+            <div style="font-weight:900; color:var(--gold); font-size:15px;">
+              Token ${formatTokenSerial(o.tokenNumber)} • ₹${o.totalAmount} (${o.paymentBreakdownLabel})
+            </div>
+            <div style="font-size:12px; color:var(--text-muted);">${o.dateDisplay}, ${o.timeDisplay} • ${o.orderType}</div>
+            <div style="font-size:13px; margin-top:4px;">${o.items.map(i => `${i.name} x${i.quantity}`).join(", ")}</div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-outline-gold" onclick='openReceiptModal(${JSON.stringify(o)})'>Invoice</button>
+            <button class="btn btn-green" onclick="markOrderDone('${o.id}')">✔ DONE</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function markOrderDone(orderId) {
+      if (isReportsOnly()) return;
+      state.orders = state.orders.map(o => o.id === orderId ? { ...o, status: "COMPLETED" } : o);
+      localStorage.setItem("jk_pos_orders", JSON.stringify(state.orders));
+      renderPreparingFood();
+    }
+
+    function renderLiveBannerHtml() {
+      return `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div>
+            <div style="font-weight:900; color:${isReportsOnly() ? 'var(--green)' : 'var(--gold)'}; font-size:13px;">
+              ${isReportsOnly() ? 'LIVE REPORTS VIEWER ONLY (User: jkshawarma)' : 'LIVE REPORTS STREAM (janiads → jkshawarma)'}
+            </div>
+            <div style="font-size:11px; color:var(--text-muted);">
+              ${isReportsOnly()
+                ? 'Logged in as Second User (jkshawarma). Live Settlement & Analytics view-only access. Order placement & editing disabled.'
+                : 'Orders placed by janiads update Settlement & Customer Mobile Analytics automatically in IST.'}
+            </div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-outline-gold" onclick="openSwitchLoginModal()">⇄ Switch User</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSettlement() {
+      document.getElementById("settlementLiveBanner").innerHTML = renderLiveBannerHtml();
+      const periods = ["TODAY", "ALL_TIME"];
+      document.getElementById("settlementPeriodChips").innerHTML = periods.map(p =>
+        `<button class="chip ${state.settlementPeriod === p ? 'active' : ''}" onclick="state.settlementPeriod='${p}'; renderSettlement();">${p === 'TODAY' ? 'Today (IST)' : 'All Time'}</button>`
+      ).join("");
+
+      const { dateKey } = getIstNowParts();
+      const filtered = state.orders.filter(o => o.status !== "CANCELLED" && (state.settlementPeriod === "ALL_TIME" || o.dateKey === dateKey));
+      const totalRev = filtered.reduce((s, o) => s + o.totalAmount, 0);
+      const totalQty = filtered.reduce((s, o) => s + (o.totalQuantity || 0), 0);
+      const cashSum = filtered.reduce((s, o) => s + (o.cashPaidAmount || 0), 0);
+      const upiSum = filtered.reduce((s, o) => s + (o.upiPaidAmount || 0), 0);
+
+      document.getElementById("settlementKpiContainer").innerHTML = `
+        <div class="kpi-box"><div class="kpi-title">NET TOTAL SALES</div><div class="kpi-val">₹${totalRev}</div><div class="kpi-sub">${filtered.length} Valid Orders</div></div>
+        <div class="kpi-box"><div class="kpi-title">PRODUCTS SOLD</div><div class="kpi-val">${totalQty} Qty</div><div class="kpi-sub">Total Items</div></div>
+        <div class="kpi-box"><div class="kpi-title">CASH COLLECTION</div><div class="kpi-val" style="color:var(--green);">₹${cashSum}</div><div class="kpi-sub">Manual Cash</div></div>
+        <div class="kpi-box"><div class="kpi-title">ONLINE / UPI</div><div class="kpi-val" style="color:var(--whatsapp);">₹${upiSum}</div><div class="kpi-sub">Manual UPI</div></div>
+      `;
+
+      const prodMap = {};
+      filtered.forEach(o => (o.items || []).forEach(it => {
+        if (!prodMap[it.name]) prodMap[it.name] = { name: it.name, qty: 0, rev: 0 };
+        prodMap[it.name].qty += it.quantity;
+        prodMap[it.name].rev += it.lineTotal;
+      }));
+      const rows = Object.values(prodMap).sort((a, b) => b.qty - a.qty);
+      document.getElementById("settlementBreakdownContainer").innerHTML = rows.length === 0
+        ? `<div style="color:var(--text-muted); font-size:12px;">No sales recorded in this period.</div>`
+        : rows.map(r => `
+          <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.08); font-size:13px;">
+            <span>${r.name}</span>
+            <span><strong style="color:var(--green);">${r.qty} Qty</strong> • <strong style="color:var(--gold);">₹${r.rev}</strong></span>
+          </div>
+        `).join("");
+    }
+
+    function normalizePhone(raw) {
+      const digits = (raw || "").replace(/\D/g, "");
+      if (digits.length === 12 && digits.startsWith("91")) return digits.slice(2);
+      return digits;
+    }
+
+    function renderAnalytics() {
+      document.getElementById("analyticsLiveBanner").innerHTML = renderLiveBannerHtml();
+      const periods = [
+        { id: "MONTHLY", label: "Monthly (30D)", days: 30 },
+        { id: "THREE_MONTHS", label: "3 Months", days: 90 },
+        { id: "SIX_MONTHS", label: "6 Months", days: 180 },
+        { id: "YEARLY", label: "Yearly", days: 365 },
+        { id: "ALL_TIME", label: "All Time", days: 9999 }
+      ];
+      document.getElementById("analyticsPeriodChips").innerHTML = periods.map(p =>
+        `<button class="chip ${state.analyticsPeriod === p.id ? 'active' : ''}" onclick="state.analyticsPeriod='${p.id}'; renderAnalytics();">${p.label}</button>`
+      ).join("");
+
+      const searchQ = (document.getElementById("analyticsSearchInput")?.value || "").trim();
+      const grouped = {};
+      state.orders.filter(o => o.status !== "CANCELLED").forEach(o => {
+        const key = normalizePhone(o.customerPhone);
+        if (!key) return;
+        if (!grouped[key]) grouped[key] = { phone: key, count: 0, totalBilled: 0, cash: 0, upi: 0, invoices: [] };
+        grouped[key].count += 1;
+        grouped[key].totalBilled += o.totalAmount;
+        grouped[key].cash += (o.cashPaidAmount || 0);
+        grouped[key].upi += (o.upiPaidAmount || 0);
+        grouped[key].invoices.push(o);
+      });
+
+      // Strictly rank highest purchaseCount at TOP, lowest at BOTTOM
+      let ranked = Object.values(grouped).sort((a, b) => (b.count - a.count) || (b.totalBilled - a.totalBilled));
+      if (searchQ) {
+        ranked = ranked.filter(c => c.phone.includes(searchQ));
+      }
+
+      const repeatCust = ranked.filter(c => c.count >= 2);
+      const repeatBilled = repeatCust.reduce((s, c) => s + c.totalBilled, 0);
+      const totalMobileBilled = ranked.reduce((s, c) => s + c.totalBilled, 0);
+      const totalVisits = ranked.reduce((s, c) => s + c.count, 0);
+
+      document.getElementById("analyticsOverallSummary").innerHTML = `
+        <div class="kpi-grid">
+          <div class="kpi-box"><div class="kpi-title">UNIQUE MOBILE NOS</div><div class="kpi-val">${ranked.length}</div><div class="kpi-sub">${totalVisits} Total Purchases</div></div>
+          <div class="kpi-box"><div class="kpi-title">REPEATED CUSTOMERS</div><div class="kpi-val" style="color:var(--green);">${repeatCust.length}</div><div class="kpi-sub">Repeat Billing: ₹${repeatBilled}</div></div>
+          <div class="kpi-box"><div class="kpi-title">TOTAL MOBILE BILLING</div><div class="kpi-val">₹${totalMobileBilled}</div><div class="kpi-sub">Tracked Mobile Invoices</div></div>
+        </div>
+      `;
+
+      document.getElementById("analyticsCustomerList").innerHTML = ranked.length === 0
+        ? `<div style="color:var(--text-muted); font-size:12px;">No customer mobile numbers recorded yet. Enter customer mobile when placing orders.</div>`
+        : ranked.map((c, idx) => `
+          <div class="menu-item-card" style="flex-direction:column; align-items:stretch;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="background:var(--orange); color:#fff; font-weight:900; font-size:11px; padding:3px 8px; border-radius:6px; margin-right:6px;">#${idx + 1}</span>
+                <strong style="font-size:15px; color:var(--gold);">+91 ${c.phone}</strong>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-weight:900; color:var(--green); font-size:14px;">Purchased: ${c.count} Times</div>
+                <div style="font-weight:900; color:var(--gold); font-size:15px;">Total Billed: ₹${c.totalBilled}</div>
+              </div>
+            </div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">
+              Payment Split: Cash ₹${c.cash} | UPI ₹${c.upi} • Avg Bill: ₹${Math.round(c.totalBilled / c.count)}
+            </div>
+          </div>
+        `).join("");
+    }
+
+    function shareSettlementWhatsApp() {
+      const { dateKey } = getIstNowParts();
+      const filtered = state.orders.filter(o => o.status !== "CANCELLED" && (state.settlementPeriod === "ALL_TIME" || o.dateKey === dateKey));
+      const totalRev = filtered.reduce((s, o) => s + o.totalAmount, 0);
+      const cashSum = filtered.reduce((s, o) => s + (o.cashPaidAmount || 0), 0);
+      const upiSum = filtered.reduce((s, o) => s + (o.upiPaidAmount || 0), 0);
+      const msg = `*${RESTAURANT.FULL_NAME}*\n*SETTLEMENT REPORT (${state.settlementPeriod})*\nOrders: ${filtered.length}\nCash: ₹${cashSum}\nUPI: ₹${upiSum}\n*NET TOTAL: ₹${totalRev}*\n_${RESTAURANT.DEVELOPER_CREDIT}_`;
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank");
+    }
+
+    function shareAnalyticsWhatsApp() {
+      const msg = `*${RESTAURANT.FULL_NAME}*\n*CUSTOMER MOBILE ANALYTICS REPORT*\n_${RESTAURANT.DEVELOPER_CREDIT}_`;
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank");
+    }
+
+    function saveNewMenuItem() {
+      if (isReportsOnly()) return;
+      const name = (document.getElementById("newMenuName").value || "").trim();
+      const category = document.getElementById("newMenuCategory").value;
+      const price = parseInt(document.getElementById("newMenuPrice").value || "0", 10);
+      if (!name || price <= 0) return;
+      state.menu.push({ id: "item_" + Date.now(), name, category, price, isVeg: category === "VEG SHAWARMA", isAvailable: true });
+      localStorage.setItem("jk_pos_menu", JSON.stringify(state.menu));
+      document.getElementById("newMenuName").value = "";
+      document.getElementById("newMenuPrice").value = "";
+      renderMenuSync();
+      alert("Menu item saved!");
+    }
+
+    function renderMenuSync() {
+      const countEl = document.getElementById("menuSyncCountLabel");
+      if (countEl) countEl.textContent = state.menu.length;
+      const listEl = document.getElementById("menuSyncCatalogList");
+      if (!listEl) return;
+      listEl.innerHTML = state.menu.map(item => `
+        <div class="menu-item-card">
+          <div>
+            <div style="font-weight:800; font-size:14px;">
+              <span class="veg-dot ${item.isVeg ? 'veg' : 'nonveg'}"></span>${item.name}
+            </div>
+            <div style="font-size:12px; color:var(--gold); font-weight:800;">${item.category} • ₹${item.price}</div>
+          </div>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button class="btn ${item.isAvailable !== false ? 'btn-green' : 'btn-outline-red'}" style="padding:5px 10px; font-size:11px;" onclick="toggleMenuAvail('${item.id}')">
+              ${item.isAvailable !== false ? 'Available' : 'Hidden'}
+            </button>
+            <button class="btn btn-outline-gold" style="padding:5px 10px; font-size:11px;" onclick="editMenuItemPrice('${item.id}')">
+              ✎ Edit ₹
+            </button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function toggleMenuAvail(itemId) {
+      if (isReportsOnly()) return;
+      state.menu = state.menu.map(m => m.id === itemId ? { ...m, isAvailable: m.isAvailable === false } : m);
+      localStorage.setItem("jk_pos_menu", JSON.stringify(state.menu));
+      renderMenuSync();
+    }
+
+    function editMenuItemPrice(itemId) {
+      if (isReportsOnly()) return;
+      const item = state.menu.find(m => m.id === itemId);
+      if (!item) return;
+      const nextPrice = prompt(`Enter new price (₹) for ${item.name}:`, item.price);
+      const parsed = parseInt(nextPrice || "", 10);
+      if (!isNaN(parsed) && parsed > 0) {
+        state.menu = state.menu.map(m => m.id === itemId ? { ...m, price: parsed } : m);
+        localStorage.setItem("jk_pos_menu", JSON.stringify(state.menu));
+        renderMenuSync();
+      }
+    }
+
+    function resetDefaultMenu() {
+      if (isReportsOnly()) return;
+      state.menu = JSON.parse(JSON.stringify(DEFAULT_MENU));
+      localStorage.setItem("jk_pos_menu", JSON.stringify(state.menu));
+      renderMenuSync();
+    }
+
+    function exportOrdersJson() {
+      const blob = new Blob([JSON.stringify(state.orders, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "jk-shawarma-pos-orders.json";
+      a.click();
+    }
+
+    renderApp();
+  </script>
+</body>
+</html>
